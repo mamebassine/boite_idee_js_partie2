@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boîte à Idées</title>
+    <!-- Lien vers le fichier CSS pour le style -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Boîte à Idées</h1>
         <div class="form-and-image">
+            <!-- Formulaire pour soumettre de nouvelles idées -->
             <form id="ideaForm">
                 <div class="form-row">
                     <div class="form-group">
@@ -39,12 +41,21 @@
                 </div>
                 <button type="submit">Soumettre</button>
             </form>
+            <!-- Image à côté du formulaire -->
             <img src="images/image5.PNG" alt="Image descriptive" id="formImage">
         </div>
+
+        <!-- Conteneur pour afficher les messages (succès ou erreur) -->
         <div id="messageContainer"></div>
+
         <h2>Idées Soumises</h2>
-        <div class="card-container" id="ideasCardContainer"></div>
+        <!-- Conteneur pour afficher les cartes d'idées soumises -->
+        <div class="card-container" id="ideasCardContainer">
+            <!-- Les cartes d'idées seront ajoutées dynamiquement ici -->
+        </div>
     </div>
-    <script src="script2.js"></script>
+
+    <!-- Lien vers le fichier JavaScript pour les fonctionnalités -->
+    <script src="script.js"></script>
 </body>
 </html>

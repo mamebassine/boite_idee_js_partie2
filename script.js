@@ -1,63 +1,53 @@
-const ideaForm = document.getElementById('ideaForm');
-const libelleInput = document.getElementById('libelle');
-const categorieSelect = document.getElementById('categorie');
-const messageTextarea = document.getElementById('message');
-const messageContainer = document.getElementById('messageContainer');
-const ideasCardContainer = document.getElementById('ideasCardContainer');
+document.getElementById('ideaForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêche la soumission du formulaire
 
-// Tableau pour stocker les idées soumises
-let ideas = [];
-
-// Vérifier s'il y a des idées sauvegardées dans localStorage et les charger
-if (localStorage.getItem('ideas')) {
-    ideas = JSON.parse(localStorage.getItem('ideas'));
-    ideas.forEach(idea => displayIdea(idea));
-}
-
-// Écouter l'événement de soumission du formulaire
-ideaForm.addEventListener('submit', function(event) {
-    event.preventDefault(); // Empêcher le rechargement de la page
-
-    // Récupérer les valeurs des champs du formulaire
-    const libelle = libelleInput.value.trim();
-    const categorie = categorieSelect.value;
-    const message = messageTextarea.value.trim();
-
-    let isValid = true;
+    var libelle = document.getElementById('libelle').value;
+    var categorie = document.getElementById('categorie').value;
+    var message = document.getElementById('message').value;
+    
+    var isValid = true;
 
     // Réinitialiser les messages d'erreur
     document.getElementById('libelleError').textContent = '';
     document.getElementById('messageError').textContent = '';
-    messageContainer.textContent = '';
+    document.getElementById('messageContainer').textContent = '';
 
-    // Valider le libellé
-    if (!libelle || libelle.length < 3 || libelle.length > 10) {
-        displayErrorMessage('libelle', 'Le libellé doit avoir entre 3 et 10 caractères.');
-        isValid = false;
-    } else if (!/^[A-Za-zÀ-ÿ\s]+$/.test(libelle)) {
-        displayErrorMessage('libelle', 'Le libellé ne doit contenir que des lettres et des espaces.');
-        isValid = false;
-    }
-
-    // Valider la catégorie
-    if (!categorie) {
-        displayErrorMessage('categorie', 'Veuillez sélectionner une catégorie.');
+    // Vérifier si le libellé contient entre 3 et 10 mots
+    var libelleWords = libelle.trim().split(/\s+/);
+    if (libelleWords.length < 3 || libelleWords.length > 10) {
+        displayMessage('Le libellé doit contenir entre 3 et 10 mots.', 'error');
+        document.getElementById('libelleError').textContent = 'Le libellé doit contenir entre 3 et 10 mots.';
         isValid = false;
     }
 
-    // Valider le message
-    if (!message) {
-        displayErrorMessage('message', 'Le message descriptif est requis.');
+    // Vérifier si le message contient entre 10 et 225 mots
+    var messageWords = message.trim().split(/\s+/);
+    if (messageWords.length < 10 || messageWords.length > 225) {
+        displayMessage('Le message descriptif doit contenir entre 10 et 225 mots.', 'error');
+        document.getElementById('messageError').textContent = 'Le message descriptif doit contenir entre 10 et 225 mots.';
+        isValid = false;
+    }
+
+    // Vérifier si le libellé ou le message contient des balises HTML
+    var htmlTagPattern = /<\/?[^>]+(>|$)/g;
+    if (htmlTagPattern.test(libelle) || htmlTagPattern.test(message)) {
+        displayMessage('Les balises HTML ne sont pas autorisées.', 'error');
+        if (htmlTagPattern.test(libelle)) {
+            document.getElementById('libelleError').textContent = 'Les balises HTML ne sont pas autorisées dans le libellé.';
+        }
+        if (htmlTagPattern.test(message)) {
+            document.getElementById('messageError').textContent = 'Les balises HTML ne sont pas autorisées dans le message descriptif.';
+        }
         isValid = false;
     }
 
     // Si tout est valide, soumettre le formulaire ou faire autre chose
     if (isValid) {
-        const newIdea = {
+        var newIdea = {
             libelle: libelle,
             categorie: categorie,
             message: message,
-            approved: false // Nouvelle idée est par défaut non approuvée
+            approved: false
         };
 
         // Ajouter la nouvelle idée au tableau des idées
@@ -78,51 +68,56 @@ ideaForm.addEventListener('submit', function(event) {
 });
 
 function displayMessage(message, type) {
+    var messageContainer = document.getElementById('messageContainer');
     messageContainer.innerHTML = `<p class="${type}">${message}</p>`;
     setTimeout(() => {
         messageContainer.innerHTML = '';
     }, 2000); // Message disparaît après 2 secondes
 }
 
-function displayErrorMessage(elementId, message) {
-    document.getElementById(elementId + 'Error').textContent = message;
-}
-
 function displayIdea(idea) {
-    const card = createIdeaCard(idea);
-    ideasCardContainer.appendChild(card);
+    var card = createIdeaCard(idea);
+    document.getElementById('ideasCardContainer').appendChild(card);
 }
 
 function createIdeaCard(idea) {
-    const card = document.createElement('div');
+    var card = document.createElement('div');
     card.classList.add('card');
 
-    const cardTitle = document.createElement('h3');
+    var cardTitle = document.createElement('h3');
     cardTitle.textContent = idea.libelle;
 
-    const cardCategory = document.createElement('p');
+    var cardCategory = document.createElement('p');
     cardCategory.textContent = `Catégorie: ${idea.categorie}`;
 
-    const cardMessage = document.createElement('p');
+    var cardMessage = document.createElement('p');
     cardMessage.textContent = idea.message;
 
-    const cardActions = document.createElement('div');
+    var cardActions = document.createElement('div');
     cardActions.classList.add('card-actions');
 
-    const approveButton = document.createElement('button');
+    var approveButton = document.createElement('button');
     approveButton.textContent = idea.approved ? 'Désapprouver' : 'Approuver';
     approveButton.addEventListener('click', () => {
         idea.approved = !idea.approved;
         approveButton.textContent = idea.approved ? 'Désapprouver' : 'Approuver';
-        card.classList.toggle('approved');
+        
+        if (idea.approved) {
+            card.classList.add('approved');
+            card.classList.remove('disapproved');
+        } else {
+            card.classList.add('disapproved');
+            card.classList.remove('approved');
+        }
+        
         localStorage.setItem('ideas', JSON.stringify(ideas));
     });
 
-    const deleteButton = document.createElement('button');
+    var deleteButton = document.createElement('button');
     deleteButton.textContent = 'Supprimer';
     deleteButton.addEventListener('click', () => {
         ideas = ideas.filter(i => i !== idea);
-        ideasCardContainer.removeChild(card);
+        document.getElementById('ideasCardContainer').removeChild(card);
         localStorage.setItem('ideas', JSON.stringify(ideas));
     });
 
@@ -136,7 +131,16 @@ function createIdeaCard(idea) {
 
     if (idea.approved) {
         card.classList.add('approved');
+    } else {
+        card.classList.add('disapproved');
     }
 
     return card;
+}
+
+// Charger les idées depuis le localStorage
+let ideas = [];
+if (localStorage.getItem('ideas')) {
+    ideas = JSON.parse(localStorage.getItem('ideas'));
+    ideas.forEach(idea => displayIdea(idea));
 }
