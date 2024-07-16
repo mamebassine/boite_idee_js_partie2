@@ -14,15 +14,17 @@ document.getElementById('ideaForm').addEventListener('submit', function(event) {
 
     // Vérifier si le libellé contient entre 3 et 10 mots
     var libelleWords = libelle.trim().split(/\s+/);
-    if (libelleWords.length < 3 || libelleWords.length > 10) {
-        displayMessage('Le libellé doit contenir entre 3 et 10 mots.', 'error');
+    if (libelleWords.length < 1 || libelleWords.length > 10) {
+        displayMessage('Le libellé doit contenir entre 1 et 10 mots.', 'error');
         document.getElementById('libelleError').textContent = 'Le libellé doit contenir entre 3 et 10 mots.';
         isValid = false;
-    }
+
+
+    } 
 
     // Vérifier si le message contient entre 10 et 225 mots
     var messageWords = message.trim().split(/\s+/);
-    if (messageWords.length < 10 || messageWords.length > 225) {
+    if (messageWords.length < 1 || messageWords.length > 225) {
         displayMessage('Le message descriptif doit contenir entre 10 et 225 mots.', 'error');
         document.getElementById('messageError').textContent = 'Le message descriptif doit contenir entre 10 et 225 mots.';
         isValid = false;
@@ -74,6 +76,7 @@ function displayMessage(message, type) {
         messageContainer.innerHTML = '';
     }, 2000); // Message disparaît après 2 secondes
 }
+
 
 function displayIdea(idea) {
     var card = createIdeaCard(idea);
